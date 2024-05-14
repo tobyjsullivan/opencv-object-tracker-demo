@@ -119,6 +119,10 @@ while True:
 				cv2.ellipse(frame, center, (w//2, h//2), 0, 0, 360, (0, 255, 0), 2)
 			else:
 				raise f'[error] unknown shape argument: {args["shape"]}'
+		else:
+			# Reset the tracked bounding box
+			initBB = None
+			tracker = OPENCV_OBJECT_TRACKERS[args["tracker"]](TRACKER_PROPS[args["tracker"]])
 
 		# update the FPS counter
 		fps.update()
