@@ -49,10 +49,13 @@ TRACKER_PROPS["dasiamrpn"].model = DASIAMRPN_MODEL
 TRACKER_PROPS["dasiamrpn"].kernel_cls1 = DASIAMRPN_KERNEL_CLS1
 TRACKER_PROPS["dasiamrpn"].kernel_r1 = DASIAMRPN_KERNEL_R1
 
-
 # grab the appropriate object tracker using our dictionary of
 # OpenCV object tracker objects
-tracker = OPENCV_OBJECT_TRACKERS[args["tracker"]](TRACKER_PROPS[args["tracker"]])
+def reset_tracker():
+	global tracker
+	tracker = OPENCV_OBJECT_TRACKERS[args["tracker"]](TRACKER_PROPS[args["tracker"]])
+
+reset_tracker()
 
 faces = []
 classifier = cv2.CascadeClassifier()
@@ -122,7 +125,7 @@ while True:
 		else:
 			# Reset the tracked bounding box
 			initBB = None
-			tracker = OPENCV_OBJECT_TRACKERS[args["tracker"]](TRACKER_PROPS[args["tracker"]])
+			reset_tracker()
 
 		# update the FPS counter
 		fps.update()
@@ -148,6 +151,9 @@ while True:
 	# if the 's' key is selected, we are going to "select" a bounding
 	# box to track
 	if key == ord("s"):
+		if initBB is not None:
+			initBB = None
+			reset_tracker()
 		# select the bounding box of the object we want to track (make
 		# sure you press ENTER or SPACE after selecting the ROI)
 		initBB = cv2.selectROI("Frame", frame, fromCenter=False,
