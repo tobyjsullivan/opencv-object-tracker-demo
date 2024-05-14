@@ -8,6 +8,12 @@ import time
 import cv2
 
 DEFAULT_TRACKER="kcf"
+
+GOTURN_MODEL_BIN='data/goturn/goturn.caffemodel'
+GOTURN_MODEL_TXT='data/goturn/goturn.prototxt'
+DASIAMRPN_MODEL='data/dasiamrpn/dasiamrpn_model.onnx'
+DASIAMRPN_KERNEL_R1='data/dasiamrpn/dasiamrpn_kernel_r1.onnx'
+DASIAMRPN_KERNEL_CLS1='data/dasiamrpn/dasiamrpn_kernel_cls1.onnx'
 FACE_CASCADE_FILE='data/haarcascades/haarcascade_frontalface_alt.xml'
 
 ap = argparse.ArgumentParser()
@@ -25,11 +31,26 @@ if int(major) < 3 or (int(major) == 3 and int(minor) < 3):
 OPENCV_OBJECT_TRACKERS = {
 	"csrt": cv2.TrackerCSRT_create,
 	"kcf": cv2.TrackerKCF_create,
+	"goturn": cv2.TrackerGOTURN_create,
+	"dasiamrpn": cv2.TrackerDaSiamRPN_create,
 }
+
+TRACKER_PROPS = {
+	"csrt": cv2.TrackerCSRT_Params(),
+	"kcf": cv2.TrackerKCF_Params(),
+	"goturn": cv2.TrackerGOTURN_Params(),
+	"dasiamrpn": cv2.TrackerDaSiamRPN_Params(),
+}
+TRACKER_PROPS["goturn"].modelBin = GOTURN_MODEL_BIN
+TRACKER_PROPS["goturn"].modelTxt = GOTURN_MODEL_TXT
+TRACKER_PROPS["dasiamrpn"].model = DASIAMRPN_MODEL
+TRACKER_PROPS["dasiamrpn"].kernel_cls1 = DASIAMRPN_KERNEL_CLS1
+TRACKER_PROPS["dasiamrpn"].kernel_r1 = DASIAMRPN_KERNEL_R1
+
 
 # grab the appropriate object tracker using our dictionary of
 # OpenCV object tracker objects
-tracker = OPENCV_OBJECT_TRACKERS[args["tracker"]]()
+tracker = OPENCV_OBJECT_TRACKERS[args["tracker"]](TRACKER_PROPS[args["tracker"]])
 
 faces = []
 classifier = cv2.CascadeClassifier()
