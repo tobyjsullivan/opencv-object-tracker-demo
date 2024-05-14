@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "opencv-motion-tracking"
+version = "0.1.0"
+description = ""
+authors = ["Toby Sullivan <tobyjsullivan@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+opencv-contrib-python = "^4.9.0.80"
+imutils = "^0.5.4"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
