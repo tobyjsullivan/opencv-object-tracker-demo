@@ -8,6 +8,7 @@ import time
 import cv2
 
 DEFAULT_TRACKER="kcf"
+DEFAULT_SHAPE="rectangle"
 
 GOTURN_MODEL_BIN='data/goturn/goturn.caffemodel'
 GOTURN_MODEL_TXT='data/goturn/goturn.prototxt'
@@ -18,7 +19,8 @@ FACE_CASCADE_FILE='data/haarcascades/haarcascade_frontalface_alt.xml'
 
 ap = argparse.ArgumentParser()
 ap.add_argument("-v", "--video", type=str, help="path to input video file")
-ap.add_argument("-t", "--tracker", type=str, default=DEFAULT_TRACKER, help="OpenCV object tracker type (kcf or csrt)")
+ap.add_argument("-t", "--tracker", type=str, default=DEFAULT_TRACKER, help="OpenCV object tracker type (kcf, csrt, goturn, dasiamrpn)")
+ap.add_argument("-s", "--shape", type=str, default=DEFAULT_SHAPE, help="shape of the bounding shape (rectangle, ellipse)")
 args = vars(ap.parse_args())
 
 print(f'[INFO] cv2 version: {cv2.__version__}')
@@ -110,8 +112,13 @@ while True:
 		# check to see if the tracking was a success
 		if success:
 			(x, y, w, h) = [int(v) for v in box]
-			cv2.rectangle(frame, (x, y), (x + w, y + h),
-				(0, 255, 0), 2)
+			if args["shape"] == "rectangle":
+				cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+			elif args["shape"] == "ellipse":
+				center = (x + w//2, y + y//2)
+				cv2.ellipse(frame, center, (w//2, h//2), 0, 0, 360, (0, 255, 0), 2)
+			else:
+				raise f'[error] unknown shape argument: {args["shape"]}'
 
 		# update the FPS counter
 		fps.update()
